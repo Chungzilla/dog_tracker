@@ -14,13 +14,12 @@ end
 
 set :database, {adapter: "postgresql", database: "dog_owners2"}
 
-
-get '/' do
+get "/" do
     if session[:user_id]
-    erb :signed_in_homepage
+      erb :signed_in_homepage
     else
-        erb 
-    erb :signed_out_homepage
+      erb :signed_out_homepage
+    end
 end
 
 #Displays sign in form
@@ -33,23 +32,18 @@ post "/sign-in" do
     @user = User.find_by(username: params[:username])
   
     # checks to see if the user exists
-    #   and also if the user password matches the password in the db
+    # and also if the user password matches the password in the db
     if @user && @user.password == params[:password]
-      # this line signs a user in
-      session[:user_id] = @user.id
-  
-      # lets the user know that something is wrong
-      flash[:info] = "You have been signed in"
-  
-      # redirects to the home page
-      redirect "/"
-    else
-      # lets the user know that something is wrong
-      flash[:warning] = "Your username or password is incorrect"
-  
-      # if user does not exist or password does not match then
-      #   redirect the user to the sign in page
-      redirect "/sign-in"
+        # this line signs a user in
+        session[:user_id] = @user.id
+
+        #Print a helpful message
+        flash[:info] = "#{@user.username} has logged in"
+        #redirect to homepage
+        redirect '/'
+    else 
+        flash[:warning] = "Your username does not exist or your password is incorrect"
+        redirect '/sign-in'
     end
 end
 
@@ -66,7 +60,6 @@ post "/sign-up" do
     username: params[:username],
     password: params[:password]
     )
-
     # this line does the signing in
     session[:user_id] = @user.id
 
@@ -98,15 +91,6 @@ get '/users/:id/edit' do
     end
 end
 
-def get_current_user do
-    User.find(session[:user_id]).username
-end
-
-
-
-
-
-
 get '/owners' do
     @all_owners = Owner.all
     erb :owners
@@ -120,7 +104,7 @@ get '/owners/:id' do
 end
 
 get '/woof' do
-    @giphy = Giphy.random('dog')
+    @gif = Giphy.random('dog')
     erb :woof
 end
 
